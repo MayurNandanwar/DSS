@@ -1,0 +1,67 @@
+-->Cloud Watch is a monitoring service 
+--> when to use ?
+  --> it is used when you have to continuous monitor the services like CPU utilization of instance, monitor that traffic come
+      to your website if it is more or less so we can increase or decrease the instance based on cpu utilization, also 
+      monitor your website is access or any error came  based on configuration and if not accessed then it 
+      send Alert messages to user 
+
+  --> you can create your own dashboard and also custom dashboard for monitoring services 
+
+  --> for each service AWS provide the dashboard form monitor 
+  --> most of services AWS Monitors.
+
+
+  Note: in AWS default monitoring time is 5 min every 5 min graph will update with information 
+  but what if you required updation for every 1 min 
+  ex. Virat kohli is famous and most likely person when he comes to play the match 
+    there is backend setup that lets say set that trigger Notification services and send msg to 
+    5cr user and for ex 50 lakhs user instant join the app but you get the information after 5 min 
+    possibility that load increase in you app. You can also set the less time as well instead of 5 min
+
+--> NameSpace of services in aws is like aws/service name , we can make custom metrics aswell.
+--> we can make custom dashboard to monitor application application wise ex. to monitor metrics like page user hits most 
+    app wise cpu utilization, storage of app etc.
+
+
+## Alarm :- we can set the alarm for any namespace reach certain limit or threshold ex cpu utilization > 30 
+          then Notification will go to the subscriber about that. 168 lacture.
+--> alarm status are 1) In Alarm : reach threshold 
+                 2) Ok : everything is ok
+                 3) insufficient data : it means it in not getting data , possible that you instance is down.
+--> use case 2 :  we can set alarm on billing of aws EstimateCharge > threshold then send msg 
+
+-- we can also create Composite Alarm : lets say we have set two alarm and now we have requirement that 
+  one of this alarm's status = 'In Alarm' then Composite alarm trigger or we can say that is both alarm
+  status = 'In Alarm' then Composite alarm trigger 
+    ex. use case in my pov : suppose mera ek cpu utilization ke liye alarm hai jissme jaise hi threshold 
+    cross hua voh ec2 bana de and then billing alert se mujhe pata chal jaaye ki paisa zyada lagg rha hai.
+
+--> if you want to see the information inside the instance then you can use Cloudwatch Agent 
+    install cloudwatch agent and set configuration using wizard file and then start the coudwatch
+    after successfull creation of CloudwatchAgent --> in custom Metrics you can see the all instance
+     related metrics.
+--> you can also install cloudwatch agent in servers available in company data-center and which will send
+    data to cloud watch 
+
+
+--> two typs of logs group class 1) standard and 2) infrequent 
+    --> log group name will be what you configure in config file.
+    --> we can check logs aswell as live log using live tail.
+    --> log insight : in which we can monitor the logs ex. how many logs contains warnings, Error etc 
+        using query. ex. at which time user loging the most in online shopping. if you have running application 
+        and aplication have 5, 6 log file that it will appear in log group .
+        --> we can filter the logs based on level , message . also see the pattern of logs and visualization 
+            query we can write using prompt.
+
+        --. also we can save the query to avoid repitative write by user.
+
+    Note : here we can use alert message that if i get the error same message or any time out error multiple
+    times in 1 hr ex 100 time i got in 1 hour then i will get the alert.
+    how many users come in app in 1hour we can also monitor and generate alarm
+
+
+
+
+
+
+

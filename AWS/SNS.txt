@@ -1,0 +1,41 @@
+SNS: Simple Notification System
+objective: There is publisher who publish the message and it will be send to all the subscriber.
+
+ex. you have one ecommerse website and you have to send email, then send sms, and execute lambda function 
+let say when i have order TV then i will get mail from website that your TV order is placed, then send sms 
+on phone number and then execute lambda function which performs the substract the ordered quentity from the 
+inventory.also you have to hit the https url to count that number of order come for specific product.
+
+This can done by application by what is the banifits for use SNS
+--> what if you are sending the sms that time users mobile is switch off 
+--> user email box full condition what we will do 
+--> what if some how you have server connectivity problem and lambda function not triggered.
+
+# possiblie that we run loop untill the mail or sms send to the user but this is not the ideal solution
+# when situation comes that you have to hit 5 url at time and have to work with number of lambda function 
+    that time scale up and sclae down how you will do , also performance matter
+    every time you have to modify the code, so instead of doing this make use of SNS.
+
+# ans of if your mobile switch off what SNS does?
+--> There is Delivery Policy stage where you publish msg , 4 ways ,msg send 
+    1) immidiate send: 
+    2) pre-backoff phase: 
+    3) backoff phase:
+    4) post backoff phase: 
+    we can set back-off function like linear, exponential, geometrically,arimethic.Default = linear.
+    so this according msg will be send.
+--> why required this backoff phases : 
+    if i set number of trial to send msg = 100, set immidiate send = 10, set pre-backoff phase =10,backoff phase =30,post backoff phase=50
+    --> i want that at pre backoff phase i send msg every 5 second 
+    --> in backoff phase i will send every 2 min 
+    --> in post backoff phase i will send 2 hour 
+    this above thing can be done by this policy stages
+
+
+
+# send SMS:
+    --> click on text message register your mobile and then subscribe this number and then publish msg
+
+# we can send sms to email, http / https url, sms, lambda function etc.
+# we can send msges like about cpu utilization, as well as to automate the subsription via http urls.
+

@@ -1,0 +1,94 @@
+lambda is compute service. and it is serverless technology means you don't have to manage the server , behind the scene aws has own opensource technology FireCracker lighweight VM where code is executed.
+aws will handle all the thing just you have to write code in  aws and deploy.
+--> lambda is event driven. means when some thing happen then code should be execute ex. if 
+any new object or any file store in s3 then code should be or lambda function should be execute 
+, if in dynamodb table any record comes then trigger the lambda function or code execute.
+
+--> chatges : based on execution time of code 
+
+Process:
+--> create function : add function name , runtime : select language , role: create role or use existing role and create function 
+    and in code tab you write code and deploy it.
+
+--> we can pass dynamic params using url also using event object
+
+--> we can use this lambda for cost optimization ex. remove snap shot which are older than the 3 years,
+remove the instance which are not usable and available , start the instances at the morining time and 
+stop at the evening, find out the instances which has cpu utilization and memory usage minimum.
+
+# cold start and Hot start
+--> when first time lambda function run then first create the environment and in this environment function execute 
+and for this it takes time called cold-start
+and when again run this then it takes less time called hot start
+where to use : this when you does connection of any like postgresql , sql that time you can use see video 176
+first time connection will make and then next time connection code will not run this kind of code you can do 
+
+## environment variable in lambda function :
+--> we can set necessary parameters in environment variable like postgresql connection string to connect Pgadmin
+    as well as mongodb and any database 
+    Note: do not add credentials in there aws has secret manager service where we can store credentials
+    why shoud not add secret credentials ?
+    --> because whoever will have permission to use this lambda function , he will able to see the credentials 
+    and thats why should not add credentials.
+
+
+## General configuration 
+    --> there are 5 params in General Configuration:
+        1) Description : we can add discription 
+        2) Memory : this says when your function will execute that time it will use how much memory.
+            ex. Memory = 128MB means if your code run for 5 second, youn have to pay charge for 128 128MB
+                if your code size is 10MB and Memory set 128MB for that also you have to pay for 128 MB 
+                so sure before set the params, as memory increase CPU size also increase.
+
+        3)Ephemeral Storage: 512 MB , ex. your default size is 512MB let say you have to download the file 
+            which is size of 3GB and your storage is 512MB then file will not downloaded you have to set 
+            this parameter for 3GB.
+            Note: Downloaded file will store in temp folder 
+        
+        4) Timeout: max time out for execution is 15 min
+
+        5) snap you can take snap of the connection of database execution time save.what happen
+        that execution environment removed after some times aws does this so when execution exist 
+        again new environment and it take time for code to run to save the time 
+        we can take snap of daatabase so this environment problem will not arise.
+
+## context and event param in lambda function :
+--> in event, parameters related to function.
+--> in context function's infra related information available. like memory , function name, 
+                function version, functions arn(aws resource name), log_stream_name
+
+## synchronous and asynchronous
+--> synchronous = client called lambda function and wait till the response not come ex client request data from database so until data not come it will wait.
+--> asynchronous = client request the lambda function with event and this request goes in queue and then process run behind which execute request in queue and just provide the result that wi get your request.
+    when you store data in S3 bucket that time we can use asynchronous we do not require result.
+    --> retry_attempts = if asynchronous operation fails it retry number of time value assign in retry_attempts 
+    --> Maximum age of event = default(6hr),it means that ex. 10
+    --> Dead Latter Queue = if lambda function fails to run then we can send msg through SNS service or 
+        we can use SQS service. 
+    
+
+--> you can also code in your IDE like vs-code and then you can upload in aws lambda function 
+or also you can store it in S3 and from s3 you can load that function 
+there is 2 option 1) from zip(zip of py file) and 2) from amazone s3 (store zip of that py file in S3).
+
+
+--> layers in lambda function: we can install all the requirement libraries and add it to layer and assign 
+this layer to function which required this 
+
+we can also add necessary code and add to the layer and we can use this codes function or class defined within it
+--> advantage is that : if any modification came then modify only in one file 
+    disadvantage some times , if modify came the you need to change other function ex. one function is getting output in dict 
+    and whichi is used in other lambda function and now you modify this in to list then also make changes in that lambda function
+    which recieve the output 
+
+    -->Note : If you use layers, you can have a maximum of 250MB for your package. You can add up to five layers per function.
+            However, if you are uploading so much code, there might be a real problem in your design that you should look into.
+            A function is meant to contain short logical code.
+
+
+#! aws lambda role : when lambda function has to access specific things to save file in  like s3 bucket then define role in aws execution role.
+#! Resource_based_policy statement: which goes to trigger the aws lambda function ex. if any new file come in s3 bucket then aws lambda function should be trigger
+
+
+
+

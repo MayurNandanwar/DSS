@@ -1,0 +1,35 @@
+--> security group acts as a virtual firewall, controlling both inbound and outbound traffic 
+    for EC2 instances and other resources within a Virtual Private Cloud (VPC)
+
+--> You define rules within a security group to allow or deny traffic based on protocols, ports,
+    and source/destination IP addresses. 
+
+Virtual Firewall:
+Security groups function like firewalls, filtering network traffic to and from your AWS resources. 
+
+Instance-Level Control:
+They operate at the instance level, meaning they control traffic for individual EC2 instances or other resources associated with them. 
+
+Inbound and Outbound Rules:
+You can define rules to allow or deny traffic based on the direction (inbound or outbound). 
+
+Stateful:
+Security groups are stateful, meaning that if an inbound request is allowed, the corresponding outbound (reply) traffic is also allowed. 
+
+Permissive Rules:
+Security group rules are always permissive, meaning that you can only specify rules that allow traffic; all other traffic is implicitly blocked. 
+
+Associated with Resources:
+You associate security groups with EC2 instances, load balancers, and other resources in your VPC. 
+
+VPC-Specific:
+Security groups are specific to a VPC and cannot be used across different VPCs. 
+
+Default Security Group:
+When you create a VPC, it comes with a default security group, which you can modify or create additional security groups as needed. 
+
+#! Note : you can only specify rules that allow traffic means ex. we have make app which is running on port 80 , and i want that 
+from all IP can access except one IP because attack on my we is happening using this IP so how define deny rule to block this IP , here in security group deny rules can not define only allow rule is defined
+
+#! note: we can assign multiple security group to one server or EC2 instance. and we do not required to restart service of instance 
+we can attach security group on the fly.

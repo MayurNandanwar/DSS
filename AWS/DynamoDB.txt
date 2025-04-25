@@ -1,0 +1,129 @@
+DynamoDB is also serverless. no need to manage the server 
+DynamoDB is non relational database where you don't required to define schema ex. how many columns available 
+in table and its datatype.'
+
+DynamoDB is serverless , no required any server, it charge based on read and write data in table 
+
+#Partition key
+while create new table then comes Partition key and Sort Key 
+Partition key : it is a primary key in table, when use make any query based on table 
+then using partition key feteching the data process faster means this partition key pass to the hash function 
+and output of hash function says that in which partition block of storage data is exist. this is helpful 
+for retriving data when size of data is large.
+
+#sort key 
+with help of 2 column key we can make composite key, so when you want to that i can use sort key 
+
+Note: when you insert item{key value pair} in table then size max should be 400KB,rows can be infinite.
+
+-->primary key and sort key you can create at time of table creation, there is no option available 
+to add primary or sort key after creating table 
+--> we can update value of row , but if we change value of primary key then record first delete and then 
+again create 
+
+
+--> we can create table , delete table , update table , export it to s3, create access control policy, create replica of table 
+and In EXPLORE ITEMS we can perform CRUD operation for records
+
+--> Diff between scan and query : query fetch data based on partition key and filter columns you have used 
+but in scan first all the data readed and then filter will apply 
+
+--> Default RCU(Read Capacity Unit) and WCU(Write Capacity Unit) is 5 and default class is DynamoDB Standard Frequent Acess at time 
+of creation of table. but you can change at time of creating table if you access table infrequently then 
+chnage Class DynamoDB Standard -Infrequent Access
+
+--> RCU depends on the average size of Item.
+
+## Read consistance:Eventual Consistance, Strong Consistance
+Eventual Consistance : ex your table is created in multiole zone and using this when you write data in table 
+then dynamodb stores it in one node and give respose that stored and in backend it later replicate this records
+to the other availability zone tables
+ex. if you have avg size of item is 4KB then 10 records read per second required 5 RCU
+
+Strong Consistance: when use write data in table then it replicate data in tables available in other 
+availability zone , when process completed then give responce successfull added.
+ex. if you have avg size of item is 4KB then 10 records read per second required 10 RCU
+
+Transactional Consistance: Transactional data ex. transaction of money from one account to another accoun 
+ex. if you have avg size of item is 4KB then 10 records read per second required 20 RCU
+because here validations increases ex. i transfer 100 rs to my friend's account here first check the 
+in my account have 100 rs then it send money to user account where additional operation performs and in my 
+account substraction happen and if any case server down then again rollback happen thatswhy 20 RCU required
+
+
+## Read/Write Capacity Setting:
+--> Provisional and OnDemand: In OnDemand you dont have to care about this Dynamodb manages its own if increase read and write Capacity
+--> in provisional setting : there is option auto scale where you set min and max read and write capacity 
+also there is off mode where you write all that at time of creating table 
+
+Difference- provisioned me jitni capacity hmne provision ki h uske according hme pay krna h 
+. Autoscaling ho skti h but workload pe depend krta h kuch minutes lega wo suddenly scale nhi krega .
+ye tb use kr skte h jb traffic predictable or consistent ho. 
+Whereas on demand me cost data r/w req pe depend krti h. Or ye tb beneficial h jb new application ho hm traffic predict na kr skte or inconsistent traffic ho 
+
+
+Note when create table then make sure that how many read and write capacity and average size of item 
+Read write capacity setting Provisional or On Demand. This things ask to user or client.
+
+
+## LOCAL SECONDARY INDEX(LSI)  and Global Sendory index 
+--> Local Secondary Index assign at time of creation of table only , no charges apply--> LSI use same partition key created at time of table , Note  in 1 partition you can store max 10GB data and you can create 5 LSI in one table for more you have to create support ticket and aws will allow.
+## Global Secondary Index(GSI) : we can create this after creation of table as well 
+in case if you have define table also LSI defined and created table but you want also index in other columns 
+now how to define index , because index can create at time of creation 
+there is a option which is in index to Global Index where you can assign sort key and partition key diff than original table 
+because replica of table form and in that raplica primary key or sort key you can assign but 
+this define keys are not for original table,
+here you have to pay the charges to aws because raplication form for table.
+--> here concept of Eventual , strong and transaction consistance comes , here you write data in original table 
+then this record will also add to replica table.
+
+## POINT IN TIME RECOVERY (PITR) abailable in dynamodb table wise  backup you can enable in multiple tables :
+--> go in table --> backups --> enable 
+ex you continuously data inserting in table and any wrong data inserted in table also data deleted by beginers
+so dynamodb help you to recover data of any time period, dynamodb keeps your data of each second 
+--> recover data using data time and also latest recover also you can do
+--> you will get new table recovery not happen in existing table because dynamodb does not do any thing with running or production table
+--> you can mannually create backup or create on demand, you can add schedular for auto backup ex daily or monthly etc.
+
+## Global Table :
+    you can create replica of table in different  region , and created table will be in sync , mean you write 
+    entry in one table then it will added in other reagon tables as well
+
+    --> this also exist in sql so what is difference : difference is that you can write data in any region table 
+    and all table will be in sync ex. if tables available in zones like mumbai and us 
+    now you can write data in mumbai and it will sync in us replica table 
+    and vise versa
+
+    --> usefull when you write locally data in table and access in different region so you can make replication in rigion using global table 
+
+## Export to s3
+    --> first create bucket in s3 the you can export in formate like DynamoDB JSON and Amazon Ion superset of json its opensourse text formate
+    --> if s3 bucket available in your account or  add account of another user to add data in his s3 bucket
+
+## import data from s3 
+    --> you can import data from se to dynamodb , csv formate also you can import if available in s3.
+    --> what are the problem so i need to export data to s3 if i have point in time recovery ?
+        --> ans is if you want to Perform ETL against the exported data on S3, and then import the data back to DynamoDB.   
+            Maybe in S3 we can stores large amount of data in S3 bucket better option than Dynamo db and stores data in S3 is actually cost saving than Dynamo db
+
+## yo can delete tables as well 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
