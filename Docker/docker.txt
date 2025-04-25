@@ -1,0 +1,322 @@
+
+
+Docker is containerization platform for devloping, packing, shipping and running the application
+it provides ability to run application in an isolated environment called container
+it makes deployment and development efficient
+
+Why do we need docker ?
+--> lets take an example that one developer who makes the application and for that application
+it uses many tools or packages like python language, nodejs, as well as libraries, mongodb, airflow
+etc. every thing is running fine 
+now testing team come who want to test the application so developer give package(image) to him 
+but in his laptop code is not running and he said to developer but in developer laptop it is
+running.
+--> Due to some of compatibility issue this things happen ex. that some functionality is not 
+working due to library version problem or function depricated in version that Qc member has 
+used so any problem can be possible 
+--> so to solve this problem is docker which makes process easy.with the help of docker 
+developer packaged all requirement and give that package to tester persion
+only tester required to have docker in his laptop, now tester will extract the package 
+and it will work in his laptop
+
+
+# what is container ?
+ --> it is an isolated environment. it is a way to package an application with all necessary dependancy and configuration.
+ --> it can be easily shared 
+ --> makes deployment and development efficient
+ --> containers are independent of each other
+ --> use : i am working on 2 project and we required different version of python or nodejs 
+         for these application ok container is used for that in docker in single machine.
+
+
+# Docker VS VM.
+ --> In Docker Low impact on OS, very fast and low disc usage(use only space required by app remaining will be free) , In Vm High impact on OS, slower, high disc usage
+ --> In docker sharing, re-building and distribution is easy, in vm challenging
+ --> In docker Encapsulate app instead of whole machine , in Vm encapsulate whole machine 
+ --> in Docker sharing the app with all dependency is easy , IN Vm not its challenging
+ --> docker container encapsulate the application , VM encapsulate the whole machine 
+
+ # main component of Docker 
+    dockerfile
+    docker image 
+    docker container
+    docker registry
+
+    --> dockerfile is simple text file which instruct to build an image, in docker file, user write the requirement like which service , tools ex airflow, mongodb, nodjs , dependency required to use application
+        and using dockerfile makes image and and we can transfer that image to other server and any user.
+    --> docker image is a single file with all the dependency and library to run the program.
+        we run the image using docker engine and instance form called container.docker container is instance of image or we can say isolated environment inside it our app is running
+    --> we can run single image multiple time and make multiple container 
+    --> Docker Registry is central repository for storing and distributing the images
+        ex. docker hub is registry where developer upload the image and no of other 
+        developer can download that images and run the application.
+        ex we can download in-build images like nodejs, nginx, python, redis etc.
+        also private registry is available where company can share images for thair use case
+
+
+DockerFile code example:
+FROM node:latest  @ base or parent image download from registry
+WORKDIR /myapp       # in container myapp folder created and inside that all required files copy using copy command
+COPY . .             # means file available in local folder copy to /myapp folder.
+RUN npm install      # required library installation
+EXPOSE 3000 # THIS IS OPTIONAL
+CMD ["npm","start"] # means run command to start app
+
+--> TO CREATE image use command : 
+    --> In docker desktop memory, cpu ,disk appears whats that : it means that docker is assigned with that much usage
+    --> to download image use docker pull image_name
+    --> docker build . #(. is local mackine folder inside that dockerfile available.) or docker build -t  imagename:tag .
+    --> rename the images : docker tag oldname:version newname:version
+
+    --> to get image list : docker image ls
+
+    --> to create container using image : docker run image_id  # image_id got using  docker image ls command # using this code will run inside container shall but not app run in browser we need to bind the port 
+    
+    --> to  stop the docker container : docker stop container_name  
+    # using docker ps we get process state in this we get container_name
+    
+    --> to bind the port so we can run on browser : docker run -p 300:3000 image_id 
+     # here 3000 port is default port of npm and it is bind to 300 port we can run on browser # -p : port bind
+    
+    --> to run container detatch mode it means that it fee the command prompt for do other thing if 
+        we do not use than we can no do anything with cmd terminal
+        command : docker run -d -p 300:3000 image_id # here -d detatch mode , -p port bind 
+
+    --> run multiple container from single image , by changing port we can run single image and create multiple container
+        command : docker -d -p 30:3000 image_id
+                  docker -d -p 40:3000 image_id 
+                  docker -d -p 50:3000 image_id  # because container is isolated and 3000 port is running inside container containers have no connectgion between each other
+
+    --> docker ps shows only running containers 
+    --> to see all the container running or not running : docker ps -a  # -a : all containers
+
+    --> to remove containers : docker rm container_name  # we can add multiple container name 
+
+    --> my need is as i stop the container it should be removed :
+       command : docker run -d --rm -p 30:3000 image_id
+
+    --> to give name to container : 
+        command : docker run -d --rm --name "myapp" -p 30:3000 image_id
+
+    --> to build image with name and tag: docker build -t mywebapp:10 .  # here -t means tag
+     # mywebapp is reposiory and 10 is version or TAG
+    --> we can create multiple image from same docker file 
+      command : docker build -t mywebapp:20 .
+
+    --> remove docker images : docker rmi imagename:version or tag
+
+    --> check the logs of container : docker log container_name 
+
+
+    --> what if to make changes happend in project then what to do
+        to see the changes then again create image and run it if changes not happend then 
+        you will see that image_id will be same and if changes occured then image id will be different
+
+        # you can use this if you want to keep old files and you can use if eny error occurs in new changes made 
+        and go to back to old code that time if you saved that image than can run images.
+
+    --> when you ve code and interact with user means use input function inside python means
+        you are interact with user then so how to make image for this 
+        ex my folder locaktion : --> venv folder --> dockerfile and myapp.py file
+
+        #dockerfile code
+            FROM python:latest
+            WORKDIR /myapp
+            COPY ./myapp.py .
+            CMD ["python","myapp"]
+
+         command : docker build . and run : docker run -it image_id # -it intractive mode 
+
+    # Docker Volume
+      --> ex i have build an image useing: docker build tag image:01 .
+      --> now to create container docker run -it --rm --name "image_cont:01" image:01 here 
+          code is running inside the container and as container stop, container will be deleted 
+          so all the things or file inside container will be removed and if we want to store the things
+          and make sure that it should not delete then use Docker Volume.
+
+        --> to create volume : docker -it --rm -v my_vol:/myapp imageid
+            -v my_vol : using this my_vol volume will created 
+            HERE myvol:volume made inside this volume which path file will generate for that myvol:/myapp
+            -->here volume created is locally and shared by docker it self that why after container is removed 
+            we still get the information.
+
+    # how to mount local file with docker container file so if any change i do in local refilect in 
+    container aswell.
+    --> ex image in dockerfile
+        FROM python:latest
+        WORKDIR /myapp
+        COPY ./myapp.py .
+        copy ./server.txt . # lets say it is available local right now it is not available 
+        CMD ["python","myapp.py"]
+
+        --> we build image : docker build .
+        --> run container : docker run --rm imageid so here copy happen from ./server.txt
+            ex if server.txt has only one line ex. server 1
+            and run conatiner: docker run --rm imageid then it containes only singel record
+
+            now what if we make changes in server.txt file add info like server2 server3 
+            now run docker run --rm imageid command only appear the server 1 no changes happen 
+
+            for that we use mount :
+                docker run -v server.txt path from local : /myapp/server.txt --rm imageid
+                so local path  will mount with container path
+
+            when required : when code deppend on  external file , during the development we changes the code implementation so that time also required
+            so you will not have to make image again and again ok. here we just mount file 
+            so no need to require to make volume.
+
+    # .dockerignore
+      --> many files are not impotant to add in container som thats why which file you dont required 
+      to generate in container that file add this in .ignoreimage
+      one ex. is dockerfile
+
+
+
+## communication from/to container:
+    three type:
+    1) service running in container and request ro outer world or Internet.
+    2) container to local machine ex. postgres running in my local machine and from container to 
+        local connection.
+    3) container to container . ex. python running in other container and mysql running in other container.
+
+    1) request to internet : when we request data from internet through api.
+        ex. DockerFile
+            FROM python
+            WORKDIR /app
+            COPY . .
+            RUN pip install request
+            CMD ["python","app.py"]
+
+        --> create image and run container insode app.py code is written which get information from internet by api.
+    
+    2) container to loacal machine 
+        ex. pymsql example :
+            dockerimage ex.
+            FROM python:latest
+            WORKDIR /app
+            COPY ./sql_demo.py .
+            RUN pip install pymysql
+            CMD ['python','sql_demo.py']
+
+            create imagae and create container
+                Note one changes we have to do in sql_demo.py file : which is replace variable host = host.docker.internal instead of host=localhost 
+
+    3) container to container communication 
+        using image of mysql download image 
+        possible to come the errors when you download or pull the image and run to create container
+        so need to set the environment variable here
+        ex: docker run -d --env MYSQL_ROOT_PASSWORD="anything" --env MYSQL_DATABASE="name_database" --name "mysql" image_id.
+        --> now sql is running in isolated container mysql has its own id so how to check 
+           command : docker inspect container_name
+           --> we will get the ip address and add this ip and add to our local file host = IP_address
+
+           Note : here information will be reserve in mysql untill we remove it 
+                    code we run: docker run --rm image_id because it mysql is continuously running 
+                    --> to stop container : docker stop container_name
+                    --> to start container : docker start container_name
+        --> we can create the image own by add code in dockerfile in locally
+
+## docker network :
+    --> lets say i have made one task where i am storing and getting the information from the mysql 
+    so first i have to make the image of mysql and run this image to create container 
+    and then have to check the IP in which ip it is running and has to set in local file python file
+    host = IP for connection and once it comes to running mode then i have to create image for python 
+    and run then container 
+    --> we have to do this mannually and we dont want this , if we share it with other tester so 
+    he doesnt know that what i have to do, in his mind is that he just have to run the container and 
+    my app will in running mode.
+
+    --> here docker network comes 
+       --> when running container in same network the it easy to communicate with each other 
+
+       command : dokcer network --help
+       --> docker network create my-net
+       --> docker run -d --env MYSQL_ROOT_PASSWORD="anything" --env MYSQL_DATABASE="name_database" --name "mysql" --network my-net image_id
+       --> changes to do with connection code in pythonfile is host = container_name
+
+
+# docker compose : it is configuration file to manage one or multiple container running on same machine.
+
+--> it not efficient way to run each evry container by command build image create container 
+    from the image and if container has dependancy that we have to take care that aswll.
+    ex. if python code requires sql in running state than first build image of sql and make 
+    it runable and then create image of python to possible to run.
+
+    and to avoid this we have docker compose yaml file : docker-compose.yml or .yaml
+    --> command : docker-compose --help 
+            --> docker-compose up -d (-d for detatch mode) for running all the services means images creation and running
+              : this command make images and create container its state is running mode
+            --> command : docker-compose down running comtainer will stop and removed only image remains we can see using docker images
+    # advantage is that we have all the requirement set in yml file and we need not to use 
+    command to build image and run container.
+
+## docker-compose for multiple container:
+    yo define all the requirement in docker compose yaml file like python , sql , airflow
+    as you define in dockerfile, you can also define in yml file
+    and it not means that dockerfile is not usefull ex. you have make image of python in dockerfile 
+    and make sql file in compose.yml file the you can directly attach dockerfile path 
+    in docker-compose.yml file to define services
+    see image name : docker-compse_yml 
+
+    --> if any problem or dependency arise ex. python has dependency of mysql container 
+    then manually we can run as well ex docker-compose run container_name
+    one by one 
+
+    --> to use additional things at time of defining the things like image , container name 
+    enviroment variable, expose port etc use: document
+    --> network automatically createed : https://docs.docker.com/reference/compose-file/services/#image
+    or using document you can create own network
+
+
+    Note: in docker-compose down : only containers will be removed but volumn, netwrok will exist
+    but if you want that that thing also should removed : docker-compose down -v 
+
+## moun using docker-compose 
+    --> we can add the volumn in docker-compose in service and mount local path to container file_path 
+        see image mount volum docker-compose
+
+
+# information about docker-compose file 
+    --> configuration file to manage one or multiple container running on same machine.
+    --> get rid of repitative coding
+    --> all the service inside the config file , same sharing network
+
+    command:
+    docker-compose up 
+    -d detatch mode
+    -v remove network/volume upon stop
+    --build to again build image and run # when you do docker-compose up then image ,container generate and run 
+    but you want to build new images again use it.
+
+
+
+
+
+#!Note: when you change dockerfile or requitrements.txt file then you have to build image then only change appear.
+docker compose up
+    This command is used to:
+        Start containers using the existing images (without rebuilding).
+        Restart containers if they are stopped.
+        Create containers if they do not already exist.
+    When to use it:
+        No changes have been made to the Dockerfile, application code, or dependencies that are copied into the image.
+        You only need to start or restart your containers.
+        You want to reuse cached images for faster startup.
+
+
+#! when to build image or where to direct up container
+Update app code (with volumes)	docker compose up	Changes reflect immediately. # note volume must attach
+Update Dockerfile (e.g., base image)	docker compose up --build	Must rebuild to apply Docker changes.
+Change requirements.txt	docker compose up --build	Dependencies are part of the image.
+Change environment variables (runtime)	docker compose up	Variables are applied at runtime.
+
+
+
+
+
+
+
+
+
+
+
