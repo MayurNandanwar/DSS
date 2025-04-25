@@ -1,0 +1,151 @@
+Apache spark is in memory data processing framework designed for large-scale distributed data processing 
+faster than Hadoop and incorporates the library with api
+MLlib use for machine learning algorithm, spark sql, structure streaming for realtime data and GraphX for graph processing
+    
+
+--> charectoristics of spark: speed : faster in speed,
+Easy of use because it is simple logical datastructure called resilient distributed dataset.,
+Modularity spark operations can be written in scala, java, python, sql and R language.
+
+
+Component of spark:
+    1) spark sql + dataframe +datasets
+    2) spark streaming : realtime data 
+    3) MLlib : machine learning algorithm
+    4) GraphX: processing Graph
+
+each component is saperate from spark core engine so in that you can write your code in any language and spark 
+will convert it to acyclic graph and that is executed by core engine
+
+--> spark sql deaals with structural data. ex. dataread from stored in RDBMS otr diff file format like csv, xlsx , parke,json
+then you can construct permanent or temporary tables in spark
+
+--> spark streaming : requirement of big data engineer is to combine realtime data or static data from sources like apache kafka or any other
+streaming sources.
+
+--> GraphX : maupulating the graph , graph can be many of type like social network graph, routes and connection points, as well as network topology
+so it offers the standard graph algorithms for analisys.
+
+
+
+
+## how Spark distributed execution framework works:
+
+--> Understanding Spark application Concept:
+ 1) Application: User program on spark using API. it consist of Driver program and executor in cluster
+ 2) SparkSession : it is a point of entry of every spark application. Spark driver instanciate sparksession for you in your shell.you have to create own session your self
+ 3) JOb: it is parallel computation wonsist of multiple task which get distributed in response to spark action
+ 4) Task : task is single unit of work
+
+
+-->Driver converts spark application in different jobs depending on operation you were doing in spark app then spark drivder transfer 
+each job to direct acyclic graph this direct acyclic graph called spark execution plan , which will submitted to 
+worker node. each job can have stage  multi- stage or single stage depends on operation perform serially or parallaly
+and stages can have multiple task and then this tasks assign to executer.
+
+
+--> spark operation on distributed data can be classified into two types 1)transformation 2) action.
+1) transformation : transform onedataframe to another dataframe without changing to original dataframe
+and transformation is lazy evaluated means result are not computed immediatly ex. filter columns from dataframe,
+join two tables which will not do anything unless you call Action but that can be recorded as lineage will allow
+spark later time in execution plan and this is very helpful for efficient execution. so this Lazy evaluation 
+is spark strategy for delaying the execution untill the Action is invoke. 
+--> Action are nothing but count(), take(), collect(), save()
+--> transformations are ex. filter(), orderby(), groupby() etc.
+--> Transformations also classified into two type 1) narrow transformation and 2) wide transformation
+    1) narrow : operation you perform like filter out data for category in which inly single work 
+        wide  : when you perform groupby based on categories and then count based on category here 
+                multiple things happen first category wise sorting and then count the records called wide transformation
+
+
+
+# ex we have daataframe and has userid,name,age,friends column 
+    # using dataframe 
+    output = df.select(df.userid,df.name,df.age,df.friends).where(df.age<30).withColumn('new',func.current_timestamp())\
+                        .orderby(df.userid)
+
+    as you know that spark is lazy operation so it just instantiate path of execution and create DAG so it will 
+    calculate the most optimum way to do operation and spark does the work when only and only action perform 
+    ex 
+        output.collect() or output.show()
+
+    # also we can do with spark sql by creating temporary View.
+    output.createorReplaceTempView('df'or any name)
+    comamnd: spark.sql("select name,age,friends,new from df").show()
+
+
+
+
+### spark Structured API : dataframe and datasets was successer of RDD resilient distributed dataset.
+    1)what is RDD and what are the reason to add structure in Spark
+    --> RDD is abstraction of spark and there are three charecteristics associate with it 
+        dependency to define the RDD , Partition and computation which are going to submit on RDD.
+        this 3 are the integral part of RDD
+        dependency:
+        List of dependency instruct spark how the RDD is constructed with its input required to create RDD
+        so when necessary to produce output spark can recreate RDD from the dependency
+
+        partition function : it provides the spark to split the operation for parallel processing
+
+        Compute function: which produce iterator for data 
+
+        this is simple structure of RDD
+
+    --> Problems wit RDD
+        1)compute function opaque the spark, spark doesnt know what you are doing with compute function
+        whethere you doing joins, or aggregation or select operation. spark only see the lambda operation
+        if you are doing any operation in RDD.
+
+        also 2nd problem is iterator data type  also Opaque for python RDDs furthermore unable to inspect
+        computation and expression spark has no way to optimize it.
+        where as in structure api, there is lazy evaluation then spark create dag will calculate optimum 
+        way to do operation this advantage we not get in case of RDD because it doesnt have structute , spark doesnt
+        know what operations are performing on data also doesnt know which datatype of schema which affect the
+        ability of spark to rearrange the computation and convert this to very efficient query plan 
+
+        and solution is to provide structure in spark
+        structure provides the better prformance and also space efficiency across spark architecture component 
+
+
+        Datasets have 2 characteractic 1) typeAPi and untipeAPI
+        datset makes more sense only in java and scala and Dataframe makes more sense in Python and R 
+        because python and R not compile time and type of language where type is  dynamically infer and assign 
+        during the time of execution not during the compiler time 
+        and reverse happen in Java and scala
+
+    --> comparision between dataframe and dataset
+
+        --> language python  and R use dataframe and scala and java use dataset
+        --> if you want to tell te spark what to do and how to do that time use dataframe
+        --> if you want very strict compile time dont mind to create many case classes for dataset the use dataset
+        --> if processing expression like filter , aggregation,maps on structured or semi structured data so both can use dataframne or dataset
+            if you want to take the advantage of tungstun, efficiency realization then use dataset 
+        --> if you want to use code optimization then use dataframe
+    
+    --> when to use RDD?
+        when you are using third party package written on RDD then use RDD
+
+
+### spark SQL Engine 
+    --> it does several things like reads several file formate like avero, parquet, csv, orc etc.
+    and convert it to temporary tables
+    -->easily connect with apache hive tables 
+    --> offers SQl Shell for quick data- extraction 
+    --> provides bridge to external tools(telend, snowflek, tablue etc.) via jdbs and odbc connection
+
+    --> core of spark engine is catalyst optimizer and tungsten togather supports high level
+     dataframe and dataset API and sql query
+
+    ## what is catalyst optimizer : it takes ccomputational query and convert it into efficient execution plan 
+    and goes to different transformation like 
+    1) analysis : generating abstact sintectory for your query 
+    2) logic optimization:  apply standard rule based optimization and for that construct the execution plan and use cost base optimization(CBO) and it applies to each plan 
+    3)physical plan: spark will generate optimal physical plan  from selected logical optimization
+    4)code generation: generate java byte code for each machine because spark sql operate on datasets loaded inmemory 
+    speeding up the execution process.and Tungsten facilitate this whole stage code generation plays main role here
+
+    so this four face above mensioned run behind the catalyst optimizer and Tungsten to complete the spark sql execution
+    it will do that more efficient manner.
+
+
+
