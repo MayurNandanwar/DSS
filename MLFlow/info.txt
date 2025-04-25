@@ -1,0 +1,253 @@
+MLflow is tool based on MLOps(Machine Learning Operation).
+
+MLOPS Basics:
+--> what is MLOps: its combination of ML + Operation where ML is development of Machine learning algorithm and code 
+and Operation means Productionizing or deploying the code or ML model
+Integration of this 2 phase is conventionally were seperate is essentially call MLOps.
+
+
+--> Definition: its set of principle and practice to standardize and streamline the machine learning lifecycle management.
+it is not technology or new tool, rather its a set of principle and guideline defined seamlessly integrate and  automate the
+development phase with operational phase
+--> MLOPs is based upon the DEvops principle of continuous integration and continuous deliver plus continuous training 
+apply to ML process to fast development, experimentation and deploy the model increases the efficiency of ML workflow. 
+
+
+
+## Traditional approach :
+steps to develop mL project 
+step1: understand the busioness logic ex. client want us to develop the Recommandation system,chatbot etc.
+step2: after the understand business logic or client reqiuirement, need data aquization data can come from 
+files , souce , mobile data 
+step3: create data from provided data for training , need to cleaning ,EDA, transforming, data imputation required.
+step4: modeling step, it requires feature selection,model training, validate and testing and this is iterative process
+because one model possible that gives not required result so need to train the other model or do hyperparam tuning,
+possible need new data for training the model etc.
+step5: once we get the optimal model the we deploy that model, means integration of model in production and test on 
+new data to enhance business value 
+step6: monitor the deployed model over the period of time ti make sure the model performing well or not.
+datadrift: means model train on data and new pass data for prediction has diff pattern so model will predict or models 
+accuracy detoriate called drift.this data drift lead the model retraining and this again cycle runs and run on.
+
+
+
+## challenging in traditional machine learning cycle 
+Activity to productionize the model
+step1: build and test locally model 
+step2 : package the model, have to compile the code , resolve the dependency and run the script
+step3 : performance , training the model with huge data is not good thing, it takes hours and hours or days for single 
+run. so some times you have to scale the data , some time parition the data and use load balancer for fast 
+training the model
+step4: once performance sorted, think about instrumentation like versioning , repo management , security and monitor
+versioning in local or traditional approach can done using github, but the maintain the versioning is very important 
+step5: monitor the model, not only accuracy but data quality also need by statistical approach, its a manual process
+
+
+## How MLOps address this challenges:
+--> Use notebook template to define the functionality ex. database connection, prepare  the dependency documents
+--> Version control system :  version control system for code , data , artifects and environment
+--> Performance : Leverage the distributed computing and containerization tools ex. docker, kubernetes
+--> Automate : Build workflow CI/CD Pipelines. put pipeline in production than putting model 
+--> Monitor: Powerful innovative monitoring tool to monitor data, features, latency up timing , distribution,
+            memory utilization. Monitoring tools like Grafana, Prometheus.
+--> Continuous Training : Automate the training of model based on triggers or regular frequency.
+
+
+
+## MLFLOW:
+--> deploying ML model in Production can be challenging task and to adress that community has develop the MLOps tools 
+that helps organization to automate build , training,deploying ML model
+MLflow one of best MLOps tool , opensource tool for managing the end to end ML life cycle include experimentation,
+reproduciability, deployment and central model registry
+
+--> This has 4 component 
+    --> MLflow Tracking : track experiments to recored and compare parameters, results.
+    --> MLflow Project : component package's code use in data science project ensuring  reuse and experiments can be reproduce.
+    --> MLflow Model: Provide standard unit for packaging and reusing ML model. this component enables managing and 
+                deploying the model from variety of library
+    --> Mlflow Registry: it is a central model store to collaboratively manage the full lifecycle of ML flow model 
+            including versioning(using hyper params, tagging), stage transition(staging, production, archive) and annotation etc
+
+
+--> MLFlow is Language Agnostic: allows modular api first approach helps easily integrate with existing ML code without any significant 
+code changes.we can use many ML libraries and any programming language, since all the functions are accessible through the
+rest api and CLI.
+--> MLFlow compatible with numerous library, development tools, frameworks of python and R. All the regular frameworks 
+like tensorflow , pytorch, keras , scikit learn integrate with MLFlow.
+-->MLFlow has all the apis and integration with existing tools and frameworks. we can use MLFlow to build the model 
+track metrics, params and artifects, to package the code in form of docker container, kubernates, apache spark etc.
+
+
+
+
+## Experiment tracking :
+--> Experiment is group of run or Experiment can have multiple run, run is single execution of piece of code. Each run record code version, hyperparameter, metric and tags etc.
+because ML process is iterative so we can run multiple runs we can say it iterations.each run and experiment has 
+unique ID to get log and retrive metadata associate with it 
+
+## mlflow set_tracking_uri : 
+--> params: 
+        <uri> : where files will be stored
+        Empty string : mlflow will automatic create folder mlruns and store all your tracks in it
+        Folder Name : provide folder name of your choice using "./name of folder"
+        file path : provide full path of system in format "file:/path/to/folder" only in C drive 
+        Remote path : provide http uri ex. http://tracking server:5000
+        Databricks Workspace :  ex. "databricks://profile name"
+
+## mlflow get_tracking_uri :  used to get the tracking uri if set , if not set than default folder we get "mlruns"
+--> params: None
+
+## create experiment : mlflow.create_experiment()
+--> param : 
+    name : name of experiment
+    artifects_location : location of artifects when you don't want to store artifects in artifects folder  # used for memory management or backup purpose
+    tags : dict of tags 
+
+## set_experiment : if experiment name available then add runs , else create experiment
+--> params:
+    experiment_name 
+    experiment_id
+    returns mlflow.entities.Experiment contain informatio related to experiment ex. Tag, artifect path etc.
+
+## get information about experiment : mlflow.get_experiment(exp_id)
+--> param :
+    experiment_id
+
+
+# start_run()
+--> params:
+    run_id : if you want to use existing run # optional 
+    experiment_id: id of experiment iunder which current run will create use only when run_id not specified
+    run_name: if used experiment_id then we can assign run name 
+    nested = False # true if have nested run 
+    tags :
+    discriptions:
+
+# end_run()
+--> params:
+    status : 'FINISHED,SCHEDULED,KILLED,RUNNING,FAILED'
+
+# active_run(): currently active run this command we can write between the start_run() and end_run()
+
+# last_active_run(): provide last active run it is written after end_run() to get info about last run
+used when want to see which is last active run if code contain many runs
+
+# log_param():
+--> param:
+        key : value  # log for single parameter
+
+# log_params():
+--> param:
+    dictionary of key value pair # log for multiple key value pair
+
+# log_metric()  # log single metric 
+--> params:
+    key:
+    value: 
+    step: single integer step at which to log specified metrics used in deeplearning for tracking each epoch metrics
+
+# log_metrics() # log multiple metrics
+--> params:
+    dictionary of metrics 
+    step:
+
+# log_artifect(): atrtifect means it can be output model, training dataset or test dataset and anyother entity, file , dataset , image , audio , video
+    you want to store and keep track.
+    --> used to store one artifect 
+--> params:
+    local path :  path of entity you want to log can anything image , audio, video, function will take this file and store in artifect path.
+    artifect_path : path of artifect you want to store , else default path taken
+
+# log_artifects() # store multiple 
+--> params:
+    local_dir: dictionary where multiple files stored
+    artifect_path: '' for default or any path 
+ 
+
+ ## get_artifect():used to get the artifect of current run or specified artifects path
+--> params:
+    artifect_path
+
+# set_tag(): lables we can add to somthing so we can later filter , add to specific run so we can filter 
+run by tag. it can be set in between the start run and end run. from ui also we can add tags
+--> params:
+    key: 
+    value
+
+# set_tags():
+--> params:
+    dictionary key val pair
+
+
+## autolog:
+using this need to automatic logging of params, artifects.sepcify log for model , log for params , log for metrics, log for input  using this 
+automatically log.
+--> two type 1) autolog, 2) library specific auto log like sklearn,keras, spark etc.
+1) auto_logging: for each supported library
+--> params:
+    log_model: specify weather to log model or not
+    log_input_examples: log input examples from training dataset along with model artifects. it will log few data not full dataset
+    log_model_signatures: means format of data and its datatype of input and also format of data with datatype in output produce
+    log_dataset : train and test dataset will log 
+    disable: to disable the all the automatic tracking
+    excusive=False means logs should be stored in specified run.
+    silent: True means supress all the event logs and warning from MLFLOW during autologging setup and training execution
+Note: auto_log command will work only when write the command before the training model(model.fit(x_train,y_train)), else no log will not work if write after fit statement
+
+#library specific autolog :
+--> params: params from autolog +
+    max_tuning_run: limit the number of run when use hyperparam tuning then large number of runs generate so to limit this runs used
+    log_post_training_metrics : if True then to log post training metrics. measure the performance of model after training on test data 
+    serialization_format :  serialization_format for model artifect when train model is saved. serialization_format you choose can affect the 
+                performance of model. some serialization_format more efficient faster to load.
+    registered_model_name : if given then after training model will auto matically registered.
+    pos_label: specify the positive class label for binary classification problem. here write which label is correspond to positive class.
+
+
+
+## MLFLOw tracking server:
+--> to track experiment and manage metadata for ML projects.
+-->there should be servere where all tracking should store for that tracking server used.
+--> Definition: it is centralize repository to store the metadata and artifects generated during the 
+    training of ML model. it allows data-scientist to keep track of model , manage arifects and metadata and result of model.
+--> there are Two component 1) storage 2) Networking (communication)
+    1) storage : store artifects and metadata during training process 
+    2) Networking: allows user to interact with the tracking server via Rest API or RPC challenges
+
+    --> in storage, MLflow offers two storage backend and artifect storage
+        --> in backend stores we stores metadata such as runid , params , metrics, name etc.
+            --> mlflow supports two types of backend store 
+                1) file store : amazone s3, locally, google cloud bucket
+                2) DB store: sqlite, postgresql etc.
+        --> artifect storage: store data like trained model, input data, output files , visuals etc locally or cloud 
+
+    --> Networking : establish the communication between client and server 
+        tracking server supports two mode of communication 
+            1) Rest API simple and flexible communication over HTTp protocol and 
+            2) RPC : use grpc , hi-performance open source framework provide bidirectional and fast communication
+                between client and server.
+--> tracking server also provide proxy access to access artifects storage. sometimes you dont have fully 
+access where artifects are stored at that time mlflow tracking server provide proxy access to access 
+to amazone s3 store or azure blob storage.
+--> tracking server provide API and SDK for different langiage like python , java, R, tensorflow
+
+local folder 
+command : mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifect-root ./mlflow-artifect --host 127.0.0.1 --port 5000
+
+sqlite
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlflow-artifacts --host 127.0.0.1 --port 5000
+
+postgres
+mlflow server --backend-store-uri postgresql://user:password@postgres:5432/mlflowdb --default-artifact-root s3://bucket_name --host remote_host --no-serve-artifacts
+
+#mlflow server --backend-store-uri postgresql://postgres:postgres@localhost:5432/mlflowdb --default-artifact-root s3://bucket_name --host remote_host --no-serve-artifacts
+
+Scenario where artifect and metadata store 
+Scenario 1: MLFLOw on local
+    --> artifect and metadata store in local directory mlruns
+
+Scenario 2: MLflow on local host with sqlite/postgresql
+    --> artifect store in local directory and metadata(tags, params, metrics etc) in database
+    --> just have to set : mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    
+Scenario 3: 
