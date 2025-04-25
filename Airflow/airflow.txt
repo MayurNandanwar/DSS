@@ -1,0 +1,81 @@
+--> Apache Airflow is open source tool which we can create, schedule and monitor 
+    many kind of workflow. it is tool used when we have workflow with task 1,2,3 which should be 
+    run periodically in specific order.
+    --> its orchestrator to manage different tools to gather so we can build data pipe line where each task perform sequence
+        ex. ETL proces where we have to first Extract data from somewhere then Transform by
+        doing analysis on that and then Load to somewhere this can be done by airflow 
+
+--> airflow is based on python 
+
+--> to create user in airflow: airflow user create --help
+
+--> workflow is a sequence of task in airflow workflow is defined as DAG : Direct Acyclic graph
+    ex we have set a workflow that first task A will run then B and c run parallaly run then d and e run parallaly 
+    but task d will not follow back to the task A.
+    so dag is collection of task organize way that reflect thair relation ship and dependencies
+
+    Task : Unit of work within a DAG like A, b,c,d,e are the task represented as node in DAG 
+
+    Operator : python operator , bash operator , custom operator can also defined by user
+    each task is an implementation of an operator ex. python operator is to execute python code 
+    bash operator to execute bash operator
+
+--> Execution Date: Its a date and time at which DAG run and task instance run
+--> Dag run : dag run is an instanciation of DAG containing the task instances at  perticular time.
+        when Dag Run is trigger dag will run  to perform task 
+
+--> Task LifeCycle : each task is go through perticulat state : like no status, Queue, Running , success, Failed ,skiped, shutdown(aborted)
+    : task execute with no status --> schedular schedule the task and after which executor put the 
+    task into Queue stage, once worker pikked the task it execute flowlessly possible that task can failed 
+    success and task failed it retry for max number of time.
+
+
+why airflow 
+1) orchestrator with airflow manage the task or pipeline with reliablity and scalability
+
+--> its orchestrator to manage different tools to gather so we can build data pipe line where each task perform sequence
+        ex. ETL proces where we have to first Extract data from somewhere then Transform by
+        doing analysis on that and then Load to somewhere this can be done by airflow 
+
+--> Airflow has three main component : webserver, Schedular and Meta Database 
+webserver for User Interface, schedular for schedule the task and Meta Database to store the information 
+related to airflow.
+
+--> In production make sure that this 3 component should be reliable otherwise lets say 
+if schedular goes down then Dag will not schedule and task will not perform 
+so in airflow you can replicate this components so if one schedular goes down then other will schedule the task 
+
+2) It has lot of intregation : Apache Airflow can work with tools like Kafka, Spark, HDFS, and Snowflake to automate tasks. 
+For Snowflake, you just need to install its specific connector to make it work with Airflow.
+
+
+## data engineer have to configure airflow satup like type of executor, which database to use .
+data engineer create and manage the DAGs through the airflow user interface webserver and DAGs are also 
+vidibal to schedular and workers which change the task's status during the whole task lifecycle
+there is an Executor. in order to persist update and retrieve the info of DAG
+
+--> this four component webserver,schedular,workers,executor connected to database you can use 
+your own database ex postgresql, mysql
+
+--> we can share the information between task using Airflow xCom. we can push information in one task and 
+pull the information using another task Note: max size of x_come 48KB
+
+-->dag with task flow api : in this we define decorater and writecode look in task_flow.py file
+
+--> Chrone Expression :  it is a string comprises five field seperated by space that represent set of time 
+we can set chrone expression using https://crontab.guru/ no need to set url
+
+-->catchup parameter = ex we have set date before 7 days in start_date params and keep catchup =True then 
+from that date to till date all the dag will run 
+
+--> when have to make connection with postgresql, mongodb, aws : -> go to admin panel in airflow 
+and there is a connection using that we can create
+
+## customize the airflow image
+#! if you want to install python dependency in airflow image like requiremnt.txt
+file where we write dependency like matplotlib , sklearn Extract
+for that you have to  copy this requiremnt.txt file and past in docker-context-files
+available in airflow docker github 
+    --> first clone the airflow github and then add requirement txt in docker-context-files
+        then build image (airflow video 1:28:00)
+
