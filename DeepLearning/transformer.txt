@@ -1,0 +1,115 @@
+## Transformers
+    --> transformers are divided into two part 1) Encoder Part 2) DecoderPart
+    --> Encoder Part: contains multiple encoder default value =6
+    --> each encoder contains layers
+        1) multi- head attension
+        2) add & Norm 
+        residual connection
+        3) Feed Forward layer 
+        4) add & Norm
+        residual connection
+
+
+########Process
+# --> Tokenization happen : tokenization is process of convert text to words and each word is represent as token 
+
+# --> convert token to embedding default = 512 size of vector :  embedding is a numerical representation of word
+
+# --> Positional encoding apply to embedding , here same postional vector generated and add with embedding vector used. using positional encoding model
+     will know the position of word or embedding vector.
+ --> now final embeddings pass to multi- head attension layer to get contextual embedding , because before embeddings are fixed number of vector ex. river bank and money bank 
+     here both word bank meaning is different.
+ --> Ressidual connection is generally used to stabilize the process and avoid vanishing gradient problem and if network is deep so possibility of gradient values(dl/dw) would be low so 
+    weight updation would be very less and model will not learn and also possibility that transformation of embeddings
+     from multi-head attension layer do not perform well.
+
+# --> embedding pass to the add & Norm layer were embedding (before pass to multi-head attension) added to result get from 
+     multi-head attension layer and final embeddings will be normalize, here layer normalization happens to make faster calculation 
+     or possibility that numbers of embedding from the multi-head attension layer would be larger and because of that further training process 
+     will be affected.
+
+# --> embedding from the add & norm layer pass to the FeedForward layer structure is of 1 hidden layer and one is output layer 
+     where in hidden layer 2048 neurons available and activation is relu to add non- linearity in data and 
+     input and output layer default contain 512 neurons and output layer has linear activation to get linear data 
+     possible that Feed Forward network is used to learn non linearity 
+
+# --> embeddings from feed-forward layer and embedding from first add & norm layers  added and again 
+     perform layer normalization to stabilize training process and result pass to the next block of 
+     encoder
+
+# why use 6 block : we can use multiple rather than 6 
+# why don't 1 block : result will not be good , because human language is complex.
+
+
+#This is how traing process happen till 6 encoding block
+
+
+## Decoder :
+  --> Transformer decoder is auto-regressive at inferance time because generated word depend on previous time stamp output., and  non-autoregressive at time of training because it makes training process slower
+ and so make training  faster it use teacher forcing method so performing data generation happens parallaly on decoder, not depend on previous time stamp of decoder.
+   --> AutoRegressive happen at time of prediction : it means model generate data point in sequence by conditioning that generation of data point happen 
+      based on previous generated data points.
+   --> non-autoregressive : in auto-regressive new datapoint generation happen based on previous generated data points
+       but here in non-autoregression used in training time, if new generated word is wrong then using 
+       teacher forcing that generated word is replaced by true word for each time stamp so model can learn
+
+# Difference in behavior is obtained by the mask-head attension layer at time of training this layer act as multi-head attension layer
+ and at time of prediction it becomes mask-head attension layer.
+
+
+
+
+
+# what is diff between masked multi-head attension and multi-head attension ?
+ --> masked-multihead attension used at time of prediction not training 
+ --> because at time of training encoder and decoder performs same process take sentence [input ex. how are you] add to decoder and process goes on till 6 encoder Block
+ --> same in decoder [output ex aap kese ho] pass to decoder at time of training masked-multi head attension act as multi head attension 
+ --> because of showing all the output data here training time data leakage problem happen because of showing output data 
+ --> but at time of prediction we use masked-multihead attension because in prediction model predict word in sequence
+ --> but in training we pass sentence in decoder so how model predict next word 
+ --> model use masking process what it does it in training time ex aap word embedding depends on kese and ho words embedding
+     embedding forms such a way that like 70% form of aap , 20% form of kese and 10% form of hai
+     in prediction we doesnt show all predicted word. this time we does masking it convert embedding of aap word such a way that it 
+     would not depend on other words
+
+
+
+### cross attension: this mechanism is used perticularly task involving sequence to sequence data
+ like translation or summarization it allows a model to focus on different part of input when generating 
+ an output
+
+## main differance between multi head attension and cross attension is :
+ in cross attension, model finds relation between two sequence input from encoder and output 
+ and in multi head attension , finds relation ship between word in input 
+ In cross attension, key and value vector comes from the input and query vector comes from output 
+ you can show from image "cross attension_2.png" 3 arrow 1 from masked-multihead attension and 2 from  input
+
+
+
+## right shifting return on architecture what says:
+
+ex input in training ex aap kon hai  then usining right-shift will do : <start> aap kon hai 
+
+
+## last Linear layer and Softmax layer 
+
+input from previous decoder block pass to the linear layer linear layer has one hidden layer contains
+neurons = unique words of vocabulary and apply linear function on it so possibility that sum 
+of numron putputs can be greater than 1 so how to predict next word thats why softmax layer is apply 
+to get probability of all the unique vocabulary to select the best probability word. ex.
+<start> aap kon hai input in output we get aap kon hain <end> end will say that completed the proces
+
+
+## masking happen at time of training and at time of prediction 
+--> masking means ex.<start> aap kese ho <end> ,let say time stamp=2, <start> , aap this two words goes as input to decoder here aap should
+know that my previous word is <start> to find out relation with that but <start> should nok know that my next word is aap for that we do masking 
+for <start> aap is feuter word and for aap, <start> is previous word, so for next time stamp aap should not know that next
+word is kese but know the relation ship between <start> and aap word
+
+Note: last 2 layes is linear and softmax
+when linear layer comes at that time only one vector pass to that which is last word of ex.
+time stamp 2 <start> and aap till the linear layer  this 2 word embedding and all the process of block 
+goes but at linear layer only aap word vector goes to linear layer (2048 neuron) and then softmax layer 
+and new word is predicted 
+in 3rd time stamp this new word vector will go to linear layer and meke  prediction for new word which is ,end>
+

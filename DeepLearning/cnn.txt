@@ -1,0 +1,65 @@
+## Note: poolings are faster that stride.
+
+# filters : filters we can say its different different pattern used to capture the features of image ex. horizontal line, vertical, curve etc. 
+and we don't have to make the filters at training time filters train through forward and backward propagation.
+we can say that filters are the weights which trains ati time of training and which will be apply to classify the image at prediction time
+
+#feature_map : when filters convolves over main image then it captures the features and we get feature_map
+    size of feature map = size of filters used for convolving over image , filter cal have channel 
+    ex. image is 28x28x3 here 3 channel used  and 4 filter used size 3x3x3 here 3 channel padding is "same" and stride = 1,
+    so feature_map size will be 28x28x4 because 4 filter is used.
+
+    Note: more filters more information you can collect from images 
+    steps 
+    --> first layer filters collect basic information from images ex dash, dotes , small lines , small curves
+    --> 2nd layer filters collect advance level of information like curve, horizontal line, 
+    --> as network becomes deep filters captures more complex features
+    Note: you can find out this from basic structure of CNN image.
+
+# padding: is used when you don't want to loose information from the images.
+--> Two type 1) valid padding and 2) same padding int(m+2p-n+1) where p is padding 
+
+-->Valid Padding
+    because convolve is operation is summation of point wise multiplication we get 1 value if we have 
+    3X3 filter stride over images lets say stride = 1 then ex. 28x28 image size then 
+    feature map size will be (m-n+1) means 28-3+1 =26 so 26.
+    --> in valid padding we are loosing information 
+-->same padding  = (m-n)+2(p)/stride +1 = 28-3+2(1)/1 +1 = 27+1 = 28
+
+
+## Why pooling layer is used?
+    --> pooling layer is used to reduce the size of image because of memory issue and avoid translation varience problem
+        1) memory: 
+        2) Translation varience: \
+                It means work of convolution operation is to find out the features and sometimes
+                this features are location specific but and feature should not be location specific other wise if any 
+                augmented image provided which has location different, not available at time of training 
+                classification at time of predict fails, using pooling this problem not comes.
+
+    --> Types of Pooling 
+        1)max pooling:
+        2) min pooling:
+        3)avg pooling :
+        4) L2 norm pooling:
+        5) global pooling:
+
+    --> ex. max pooling : 
+            --> in max pooling there is no trainable parameres it just aggregation operation 
+            here same process happen here ex. size of pooling(it looks like filters) 2X2X3 and feature_map size is 28x28x3 and stride=1
+            padding = valid, so gere filter convolve over feature_map that area called receptive_field  and get max value from it
+            so here generated feature_map will contain only important feature,we are removing low level information
+            from it. here translation varience problem is solved
+
+    --> Dsadvantage: we loose some of information for saving memory or if we do not required low level information possible.
+                     not used where location matters like image segmentation.
+
+    --> Advantage: Reduce size of image,
+                   avoid translation varience: here features shifts when use pooling opeartion
+                   pooling filters ara Not required of training beacuse it is aggregation process
+                   so in backpropagation nothing happen with pooling filters and thats why faster 
+                   than stride.
+
+            
+
+
+

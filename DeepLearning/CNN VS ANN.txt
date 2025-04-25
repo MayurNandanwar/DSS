@@ -1,0 +1,24 @@
+Difference Between CNN VS ANN:
+
+    1) CNN is computationally cost effective:
+    --> In CNN fiter size is not depend on the size of input so weight will be fixed if you define filter 
+        ex. image size 28x28x3 and lets say filter size is 3x3x3 , filter convolve over the image 
+        now lets keep same filter size and change the size of image 238x238x3 and filter 3x3x3
+
+        whare as there In ANN image increatse then flatten of image increase neuron size ex. 200x200x3 image flatten 
+        is 120000 neurons and lets say in hidden layer neuron is 30 so 120000 x 30 weights ,
+        ex.2 image size 28x28x3 and hidden neuron 30 so weights = 28x28x3x30 
+
+        thats why CNN is computationally cost effective 
+
+    2) Overfitting happen in ANN: 
+        whare as there In ANN image increatse then flatten of image increase neuron size ex. 200x200x3 image flatten 
+        is 120000 neurons and lets say in hidden layer neuron is 30 so 120000 x 30 weights ,
+        ex.2 image size 28x28x3 and hidden neuron 30 so weights = 28x28x3x30 
+
+        because of this in ANN overfitting happen 
+        where as in CNN overfiting not happen 
+
+    3) Loss the arrangement of pixels in ANN:
+        when work with image and use ANN , so due to flattening we loss the arragement of pixels 
+        here in CNN, 2D pixel arrangement captured by CNN.
