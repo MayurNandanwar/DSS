@@ -1,0 +1,46 @@
+Signals: there is sender who send the signal and receiver function we write in code which wil receive the signal 
+and performs further process 
+
+1) login , logout , login_fail signals : used when user login successfully then send signal like send information to
+receiver function like user , password etc and based on information developer can perform operation 
+ex. if user wrongly add password for more that 3  times than block the use etc.
+
+use from django.contrib.auth.signal import user_logged_in, user_logged_out , user_login_failed
+
+
+2) model signal : set of signals sent by model system.
+import from django.db.models.signals import pre_init, post_init, pre_save, pre_delete, post_save, post_delete
+
+
+3) pre and post request signals :
+from django.core.signals import request_started, request_finished, request_exception
+
+4) management_signals = import from from django.db.models.signals , pre_migrate, post_migrate.
+used when we run make migrate command 
+
+5) test_signals
+
+6) database wrapper signals = when database connection initiate that time this used
+import from django.db.backend.signals, connection_created
+
+
+
+
+Note : if you want to work with signals then also can use decorator concept by 
+importing receiver from django.dispatch 
+
+where we can use :
+ex to fetch the ip of user to from which ip app was accesed also , how many times user access the application in a day.
+also migration signals used all tables migrate or not
+
+
+
+7) Custom signal build: all signals are instance of djano.dispatch.signals 
+can send signal using command send and send_robust : diff between this two is that send doesnot catch the 
+error and send_robust catch the error and raise using python exception
+
+--
+> to do disconnect the signals . use disconnect method 
+
+
+Error : which signal called if you cannot identify that time problem arise.
